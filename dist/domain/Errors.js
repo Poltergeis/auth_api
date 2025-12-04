@@ -1,9 +1,0 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserAlreadyExistsError = exports.InvalidCredentialsError = void 0;
-class InvalidCredentialsError extends Error {
-}
-exports.InvalidCredentialsError = InvalidCredentialsError;
-class UserAlreadyExistsError extends Error {
-}
-exports.UserAlreadyExistsError = UserAlreadyExistsError;
