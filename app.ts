@@ -3,9 +3,9 @@ dotenv.config();
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { DependencyContainer } from './infrastructure/di';
-import { InvalidCredentialsError, UserAlreadyExistsError } from './domain/Errors';
-import { createRouter } from './infrastructure/router';
+import { DependencyContainer } from './src/infrastructure/di';
+import { InvalidCredentialsError, UserAlreadyExistsError } from './src/domain/Errors';
+import { createRouter } from './src/infrastructure/router';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
