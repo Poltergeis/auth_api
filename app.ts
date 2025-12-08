@@ -1,11 +1,13 @@
-import dotenv from "dotenv";
-dotenv.config();
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { DependencyContainer } from './infrastructure/di';
-import { InvalidCredentialsError, UserAlreadyExistsError } from './domain/Errors';
-import { createRouter } from './infrastructure/router';
+import {
+  InvalidCredentialsError,
+  UserAlreadyExistsError,
+  TutorNotFoundError
+} from './src/domain/Errors';
+import { DependencyContainer } from './src/infrastructure/di';
+import { createRouter } from './src/infrastructure/router';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,13 +42,18 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
+  if (err instanceof TutorNotFoundError) {
+    res.status(404).json({ message: err.message });
+    return;
+  }
+
   if (err.message === 'Token inválido o expirado') {
     res.status(401).json({ message: err.message });
     return;
   }
 
   // Error genérico
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Ha ocurrido un error interno del servidor',
     ...(process.env.NODE_ENV === 'development' && { error: err.message })
   });
@@ -61,17 +68,4 @@ app.use((req: Request, res: Response) => {
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
-});
-
-// Graceful shutdown
-process.on('SIGINT', async () => {
-  console.log('\n🛑 Cerrando servidor...');
-  await container.disconnect();
-  process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
-  console.log('\n🛑 Cerrando servidor...');
-  await container.disconnect();
-  process.exit(0);
 });

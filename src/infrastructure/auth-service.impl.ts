@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { AuthService } from '../domain/AuthService';
-import { User } from '../domain/User';
+import { Student, Tutor } from '@prisma/client';
 
 export class JWTAuthService implements AuthService {
   private readonly jwtSecret: string;
@@ -19,22 +19,25 @@ export class JWTAuthService implements AuthService {
     return bcrypt.compare(password, hash);
   }
 
-  generateToken(user: User): string {
+  generateToken(user: Tutor | Student, userType: 'tutor' | 'student'): string {
     return jwt.sign(
-      { 
-        userId: user.id, 
+      {
+        userId: user.id,
         email: user.email,
-        isTutor: user.isTutor 
+        userType
       },
       this.jwtSecret,
-      { expiresIn: '7d' }
+      { expiresIn: '7' }
     );
   }
 
-  verifyToken(token: string): string {
+  verifyToken(token: string): { userId: string; userType: 'tutor' | 'student' } {
     try {
-      const decoded = jwt.verify(token, this.jwtSecret) as { userId: string };
-      return decoded.userId;
+      const decoded = jwt.verify(token, this.jwtSecret) as {
+        userId: string;
+        userType: 'tutor' | 'student';
+      };
+      return { userId: decoded.userId, userType: decoded.userType };
     } catch (error) {
       throw new Error('Token inválido o expirado');
     }

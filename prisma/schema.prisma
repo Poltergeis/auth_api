@@ -4,24 +4,34 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
-model User {
-  id                      String    @id @default(uuid())
-  email                   String    @unique
-  name                    String
-  passwordHash            String
-  semester                String?
-  state                   String?
-  createdAt               DateTime  @default(now())
-  hasCompletedEvaluation  Boolean   @default(false)
-  isTutor                 Boolean   @default(false)
-  phone                   String?
-  relationship            String?
-  minorName               String?
-  minorEmail              String?
-  minorBirthdate          String?
+model Tutor {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  phone        String
+  createdAt    DateTime  @default(now())
+  students     Student[]
   
-  @@map("users")
+  @@map("tutors")
+}
+
+model Student {
+  id                      String   @id @default(uuid())
+  email                   String   @unique
+  name                    String
+  passwordHash            String?  // NULL si tiene tutor, solo para mayores independientes
+  semester                String
+  state                   String
+  birthdate               String?  // Solo para menores
+  relationship            String?  // Relación con el tutor (solo menores)
+  createdAt               DateTime @default(now())
+  hasCompletedEvaluation  Boolean  @default(false)
+  tutorId                 String?  // NULL si es mayor independiente
+  tutor                   Tutor?   @relation(fields: [tutorId], references: [id])
+  
+  @@map("students")
 }
