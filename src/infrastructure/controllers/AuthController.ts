@@ -31,7 +31,6 @@ export class AuthController {
       }
 
       const result = await this.loginUseCase.login(email, password);
-
       const response: AuthResponseDTO = {
         user: {
           id: result.user.id,
