@@ -5,9 +5,27 @@ import {
   AdultStudentRegisterData,
   MinorStudentRegisterData
 } from '../../domain/Student';
+import { AuthService } from '../../domain/AuthService';
+import { InvalidCredentialsError } from '../../domain/Errors';
 
 export class PrismaStudentRepository implements StudentRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaClient, private readonly authService: AuthService) { }
+  
+  async delete(email: string, password: string) {
+    const self = await this.findByEmail(email);
+    if (!self) {
+      throw new InvalidCredentialsError();
+    }
+    const isPasswordValid = await this.authService.comparePassword(password, self?.passwordHash!);
+    if (!isPasswordValid) {
+      throw new InvalidCredentialsError();
+    }
+    await this.prisma.student.delete({
+      where: {
+        id: self.id
+      }
+    });
+  }
 
   async findByEmail(email: string): Promise<Student | null> {
     const student = await this.prisma.student.findUnique({

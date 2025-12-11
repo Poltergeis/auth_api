@@ -14,5 +14,9 @@ export function createRouter(authController: AuthController): Router {
   // Registro de tutores
   router.post('/auth/register/tutor', authController.registerTutor);
 
+  router.delete('/auth/management/tutor', authController.deleteTutor);
+
+  router.delete('/auth/management/student', authController.deleteStudent);
+
   return router;
 }

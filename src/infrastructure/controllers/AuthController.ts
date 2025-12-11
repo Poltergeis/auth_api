@@ -12,13 +12,17 @@ import {
   TutorResponseDTO,
   StudentResponseDTO
 } from '../models/http/DTOs';
+import DeleteTutorUseCase from '../../application/DeleteTutorUseCase';
+import DeleteStudentUseCase from '../../application/DeleteStudentUseCase';
 
 export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly registerAdultStudentUseCase: RegisterAdultStudentUseCase,
     private readonly registerTutorUseCase: RegisterTutorUseCase,
-    private readonly registerMinorStudentUseCase: RegisterMinorStudentUseCase
+    private readonly registerMinorStudentUseCase: RegisterMinorStudentUseCase,
+    private readonly deleteTutorUseCase: DeleteTutorUseCase,
+    private readonly deleteStudentUseCase: DeleteStudentUseCase
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -165,4 +169,46 @@ export class AuthController {
       next(error);
     }
   };
+
+  deleteTutor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      try {
+          // Tipado de req.body con el DTO existente (o una interfaz para DELETE)
+          const { email, password } = req.body as LoginRequestDTO; 
+          
+          if (!email || !password) {
+              // Usar next para que el manejador global procese el 400
+              return next(new MissingFieldsError("some fields are missing", "email", "password"));
+          }
+          
+          await this.deleteTutorUseCase.run(email, password);
+          
+          res.status(200).json({
+              success: true,
+              message: "tutor has been successfully removed"
+          });
+      } catch (error) {
+          next(error); // Captura errores del Caso de Uso (ej: InvalidCredentialsError)
+      }
+  }
+
+  deleteStudent = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Tipado de req.body con el DTO existente (o una interfaz para DELETE)
+        const { email, password } = req.body as LoginRequestDTO; 
+        
+        if (!email || !password) {
+            // Usar next para que el manejador global procese el 400
+            return next(new MissingFieldsError("some fields are missing", "email", "password"));
+        }
+        
+        await this.deleteStudentUseCase.run(email, password);
+        
+        res.status(200).json({
+            success: true,
+            message: "student has been successfully removed"
+        });
+    } catch (error) {
+        next(error); // Captura errores del Caso de Uso (ej: InvalidCredentialsError)
+    }
+  }
 }

@@ -7,6 +7,8 @@ import { PrismaTutorRepository } from './repositories/PrismaTutorRepository';
 import { PrismaStudentRepository } from './repositories/PrismaStudentRepository';
 import { JWTAuthService } from './auth-service.impl';
 import { AuthController } from './controllers/AuthController';
+import DeleteStudentUseCase from '../application/DeleteStudentUseCase';
+import DeleteTutorUseCase from '../application/DeleteTutorUseCase';
 
 export class DependencyContainer {
   private static instance: DependencyContainer;
@@ -20,15 +22,17 @@ export class DependencyContainer {
   public readonly registerTutorUseCase: RegisterTutorUseCase;
   public readonly registerMinorStudentUseCase: RegisterMinorStudentUseCase;
   public readonly authController: AuthController;
+  public readonly deleteStudentUseCase: DeleteStudentUseCase;
+  public readonly deleteTutorUseCase: DeleteTutorUseCase;
 
   private constructor() {
     // Infraestructura
     this.prisma = new PrismaClient();
-    this.tutorRepository = new PrismaTutorRepository(this.prisma);
-    this.studentRepository = new PrismaStudentRepository(this.prisma);
     this.authService = new JWTAuthService(
       process.env.JWT_SECRET || 'default-secret-change-in-production'
     );
+    this.tutorRepository = new PrismaTutorRepository(this.prisma, this.authService);
+    this.studentRepository = new PrismaStudentRepository(this.prisma, this.authService);
 
     // Casos de uso
     this.loginUseCase = new LoginUseCase(
@@ -49,12 +53,17 @@ export class DependencyContainer {
       this.tutorRepository
     );
 
+    this.deleteStudentUseCase = new DeleteStudentUseCase(this.studentRepository);
+    this.deleteTutorUseCase = new DeleteTutorUseCase(this.tutorRepository);
+
     // Controladores
     this.authController = new AuthController(
       this.loginUseCase,
       this.registerAdultStudentUseCase,
       this.registerTutorUseCase,
-      this.registerMinorStudentUseCase
+      this.registerMinorStudentUseCase,
+      this.deleteTutorUseCase,
+      this.deleteStudentUseCase
     );
   }
 

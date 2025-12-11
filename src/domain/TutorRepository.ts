@@ -5,4 +5,5 @@ export interface TutorRepository {
   findById(id: string): Promise<Tutor | null>;
   save(data: TutorRegisterData): Promise<Tutor>;
   update(tutor: Tutor): Promise<Tutor>;
+  delete(email:string, password: string): Promise<void>;
 }

@@ -7,4 +7,5 @@ export interface StudentRepository {
   saveAdult(data: AdultStudentRegisterData): Promise<Student>;
   saveMinor(data: MinorStudentRegisterData): Promise<Student>;
   update(student: Student): Promise<Student>;
+  delete(email: string, password: string): Promise<void>;
 }
