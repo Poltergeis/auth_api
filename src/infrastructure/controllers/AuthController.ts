@@ -82,7 +82,7 @@ export class AuthController {
         
         <div class="step">
             <h3>Opción 1: Desde la aplicación</h3>
-            <p>Ve a Configuración > Cuenta > Eliminar Cuenta y sigue las instrucciones.</p>
+            <p>Ve a Ajustes > Eliminar Cuenta y sigue las instrucciones.</p>
         </div>
 
         <div class="step">
@@ -106,8 +106,8 @@ export class AuthController {
 
         <div class="contact-info">
             <h3>¿Necesitas ayuda?</h3>
-            <p>Email: soporte@tuapp.com<br>
-            Horario de atención: Lunes a Viernes, 9:00 - 17:00</p>
+            <p>Email: softcode20246@gmail.com<br>
+            Horario de atención: Lunes a Viernes, 8:00 - 16:00</p>
         </div>
     </body>
     </html>
